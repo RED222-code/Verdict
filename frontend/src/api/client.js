@@ -1,4 +1,7 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+// Requests to /api/v1/* are proxied to the Express backend:
+// - locally:     via Vite's dev server proxy (vite.config.js)
+// - on Vercel:   via the /api/(.*) rewrite in vercel.json
+const API_BASE_URL = '/api/v1';
 
 export class ApiError extends Error {
   constructor(message, status, data = null) {
