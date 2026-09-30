@@ -10,6 +10,9 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
+    // Dev-only proxy: forwards /api/* to the local Express server.
+    // In production (Vercel), the /api/(.*) rewrite in vercel.json
+    // routes those requests to the 'api' service instead.
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
