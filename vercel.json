@@ -4,8 +4,7 @@
     "api": {
       "root": ".",
       "framework": "express",
-      "buildCommand": "npm install --omit=dev",
-      "entrypoint": "server.js"
+      "entrypoint": "api.js"
     },
     "frontend": {
       "root": "frontend",

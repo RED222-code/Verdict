@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const { AppError } = require('./utils');
 const globalErrorHandler = require('./utils/errorController');
 
@@ -19,6 +20,25 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
+// Lazy MongoDB connection for serverless environments (Vercel).
+// Locally, server.js connects before any request arrives, so this falls through.
+let isConnected = false;
+app.use(async (req, res, next) => {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return next();
+  }
+  try {
+    const uri = process.env.MONGODB_URI;
+    if (!uri) return next(new AppError('Database not configured', 500));
+    await mongoose.connect(uri);
+    isConnected = true;
+    next();
+  } catch (err) {
+    next(new AppError('Database connection failed', 500));
+  }
+});
 
 app.get('/', (req, res) => {
   res.json({
