@@ -34,7 +34,7 @@ export async function request(endpoint, options = {}) {
   let response;
   try {
     response = await fetch(url, config);
-  } catch (netErr) {
+  } catch {
     throw new ApiError('Unable to connect to server. Please check your network or server status.', 0);
   }
 
@@ -68,6 +68,10 @@ export async function request(endpoint, options = {}) {
     }
 
     throw new ApiError(errorMessage, response.status, json);
+  }
+
+  if (!json || typeof json !== 'object' || !Object.hasOwn(json, 'data')) {
+    throw new ApiError('The server returned an invalid response. Please try again shortly.', response.status);
   }
 
   return json;

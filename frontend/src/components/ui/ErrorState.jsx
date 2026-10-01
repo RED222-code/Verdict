@@ -9,7 +9,7 @@ export function ErrorState({
   className = '',
 }) {
   return (
-    <div className={`flex flex-col items-center justify-center text-center p-12 bg-rose-500/5 border border-rose-500/20 rounded-3xl ${className}`}>
+    <div role="alert" className={`flex flex-col items-center justify-center text-center p-12 bg-rose-500/5 border border-rose-500/20 rounded-3xl ${className}`}>
       <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-4">
         <AlertCircle className="w-7 h-7" />
       </div>

@@ -23,20 +23,26 @@ app.use(express.json());
 
 // Lazy MongoDB connection for serverless environments (Vercel).
 // Locally, server.js connects before any request arrives, so this falls through.
-let isConnected = false;
+let connectionPromise;
 app.use(async (req, res, next) => {
-  if (isConnected || mongoose.connection.readyState === 1) {
-    isConnected = true;
+  if (mongoose.connection.readyState === 1) {
     return next();
   }
   try {
     const uri = process.env.MONGODB_URI;
     if (!uri) return next(new AppError('Database not configured', 500));
-    await mongoose.connect(uri);
-    isConnected = true;
+    // Share a cold-start connection across simultaneous requests. Clear the
+    // promise after each attempt so failures and later disconnects can recover.
+    if (!connectionPromise) {
+      connectionPromise = mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 })
+        .finally(() => { connectionPromise = undefined; });
+    }
+    await connectionPromise;
     next();
   } catch (err) {
-    next(new AppError('Database connection failed', 500));
+    // Log only the error type: driver messages can contain connection details.
+    console.error('MongoDB connection failed:', err.name);
+    next(new AppError('Database connection failed', 503));
   }
 });
 

@@ -4,6 +4,7 @@
   "description": "MVC Product Review API built with Express, MongoDB, and Mongoose",
   "main": "server.js",
   "scripts": {
+    "test": "node --test tests/*.test.cjs",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "import-dev": "node import-dev-data.js --import",

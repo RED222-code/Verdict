@@ -2,10 +2,13 @@ import React from 'react';
 import { ProductCard } from './ProductCard';
 import { SkeletonCard } from '../ui/SkeletonCard';
 import { EmptyState } from '../ui/EmptyState';
+import { ErrorState } from '../ui/ErrorState';
 
 export function ProductGrid({
   products = [],
   isLoading = false,
+  isError = false,
+  onRetry,
   emptyTitle = 'No products found',
   emptyDescription = 'No products match your current filters or query.',
   onResetFilters,
@@ -16,6 +19,10 @@ export function ProductGrid({
         <SkeletonCard count={6} />
       </div>
     );
+  }
+
+  if (isError) {
+    return <ErrorState title="Unable to load products" message="Products are temporarily unavailable. Please try again." onRetry={onRetry} />;
   }
 
   if (!products || products.length === 0) {

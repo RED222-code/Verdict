@@ -7,6 +7,11 @@ const { updateProductStats } = require('./utils');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+if (process.env.NODE_ENV === 'production' || process.env.VERCEL || process.env.DEV_DATA_IMPORT !== 'true') {
+  console.error('Data import/delete is disabled. Use DEV_DATA_IMPORT=true only with a disposable development database outside Vercel.');
+  process.exit(1);
+}
+
 if (!MONGODB_URI) {
   console.error('MONGODB_URI not configured in .env');
   process.exit(1);
@@ -269,7 +274,7 @@ async function importData() {
   try {
     await mongoose.connect(MONGODB_URI);
 
-    // Keep existing admin if already present, or clean & reseed
+    // Replace all existing development records with sample data.
     await User.deleteMany();
     await Product.deleteMany();
     await Review.deleteMany();

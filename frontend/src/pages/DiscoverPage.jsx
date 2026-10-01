@@ -21,12 +21,12 @@ export function DiscoverPage() {
   const navigate = useNavigate();
 
   // Queries
-  const { data: topRated, isLoading: loadingTopRated } = useQuery({
+  const { data: topRated, isLoading: loadingTopRated, isError: topRatedError, refetch: retryTopRated } = useQuery({
     queryKey: ['products', 'top-rated'],
     queryFn: () => productsApi.getTopRated(6),
   });
 
-  const { data: availableProducts, isLoading: loadingAvailable } = useQuery({
+  const { data: availableProducts, isLoading: loadingAvailable, isError: availableError, refetch: retryAvailable } = useQuery({
     queryKey: ['products', 'available'],
     queryFn: () => productsApi.getAvailable(6),
   });
@@ -55,8 +55,8 @@ export function DiscoverPage() {
     }
   };
 
-  const totalReviewsCount = reviewStats?.summary?.reviewCount || productStats?.totalRatings || 0;
-  const avgRatingScore = reviewStats?.summary?.averageRating || productStats?.averageRating || 0;
+  const totalReviewsCount = reviewStats?.summary?.reviewCount ?? productStats?.totalRatings;
+  const avgRatingScore = reviewStats?.summary?.averageRating ?? productStats?.averageRating;
 
   return (
     <div className="flex flex-col gap-24 pb-20">
@@ -130,7 +130,7 @@ export function DiscoverPage() {
           >
             <div className="flex flex-col items-center">
               <span className="text-2xl sm:text-3xl font-extrabold text-white font-mono">
-                {productStats?.productCount || '12+'}
+                {productStats?.productCount ?? '—'}
               </span>
               <span className="text-xs font-mono uppercase text-slate-400 mt-1">
                 Products Indexed
@@ -139,7 +139,7 @@ export function DiscoverPage() {
 
             <div className="flex flex-col items-center">
               <span className="text-2xl sm:text-3xl font-extrabold text-white font-mono">
-                {totalReviewsCount || '10+'}
+                {totalReviewsCount ?? '—'}
               </span>
               <span className="text-xs font-mono uppercase text-slate-400 mt-1">
                 Verified Reviews
@@ -148,7 +148,7 @@ export function DiscoverPage() {
 
             <div className="flex flex-col items-center">
               <span className="text-2xl sm:text-3xl font-extrabold text-amber-400 font-mono">
-                {avgRatingScore ? Number(avgRatingScore).toFixed(1) : '4.7'}★
+                {avgRatingScore != null ? Number(avgRatingScore).toFixed(1) : '—'}★
               </span>
               <span className="text-xs font-mono uppercase text-slate-400 mt-1">
                 Average Score
@@ -191,6 +191,8 @@ export function DiscoverPage() {
         <ProductGrid
           products={topRated}
           isLoading={loadingTopRated}
+          isError={topRatedError}
+          onRetry={() => retryTopRated()}
         />
       </section>
 
@@ -261,6 +263,8 @@ export function DiscoverPage() {
         <ProductGrid
           products={availableProducts}
           isLoading={loadingAvailable}
+          isError={availableError}
+          onRetry={() => retryAvailable()}
         />
       </section>
 

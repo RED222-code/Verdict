@@ -7,7 +7,7 @@ import { ProductFilters } from '../components/products/ProductFilters';
 import { ProductSort } from '../components/products/ProductSort';
 import { Pagination } from '../components/products/Pagination';
 import { Button } from '../components/ui/Button';
-import { Search, SlidersHorizontal, X, ArrowLeft } from 'lucide-react';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ProductsPage() {
@@ -58,7 +58,7 @@ export function ProductsPage() {
   }, [filters]);
 
   // Main products query
-  const { data: products, isLoading, isError, error, refetch } = useQuery({
+  const { data: products, isLoading, isError, refetch } = useQuery({
     queryKey: ['products', apiParams],
     queryFn: () => productsApi.getProducts(apiParams),
   });
@@ -254,6 +254,8 @@ export function ProductsPage() {
           <ProductGrid
             products={products}
             isLoading={isLoading}
+            isError={isError}
+            onRetry={() => refetch()}
             emptyTitle="No products match criteria"
             emptyDescription="We couldn't find any products matching your specific combination of filters. Try clearing or relaxing some criteria."
             onResetFilters={handleResetFilters}
